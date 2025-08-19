@@ -1,12 +1,44 @@
-# React + Vite
+# AI Chat Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web-based AI-powered programming assistant that helps users with coding questions, powered by **Google Gemini API**, **Firebase Authentication**, and **Firestore Database**. This app allows users to chat with an AI assistant in real-time and store their chat history securely.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- **User Authentication:** Sign up and log in using Email/Password or Google account (via Firebase Auth).  
+- **Real-time Chat:** Messages are stored in Firestore and updated instantly.  
+- **AI Assistant:** Powered by Google Gemini API, provides programming help with code examples.  
+- **User-specific Chat History:** Each user's messages are private and secured.  
+- **Markdown Support:** Responses can display code blocks and formatted text using React Markdown.  
+- **Responsive & Modern UI:** Clean design with Tailwind CSS and animations.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Tech Stack
+
+- **Frontend:** React.js, Tailwind CSS, React Router  
+- **Backend:** Firebase (Auth + Firestore)  
+- **AI:** Google Gemini API  
+- **State Management:** React Hooks (`useState`, `useEffect`)  
+- **Syntax Highlighting:** `react-syntax-highlighter`
+
+---
+
+
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js >= 16
+- NPM or Yarn
+- Firebase account
+- Google AI Studio account for Gemini API
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/TejaNaik15/ChatMentorAI.git
+   cd ChatMentorAI
