@@ -154,7 +154,7 @@ function Chat() {
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* Header */}
+     
       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center space-x-3">
@@ -187,7 +187,7 @@ function Chat() {
         </div>
       ) : (
         <>
-          {/* Messages */}
+    
           <div className="flex-1 overflow-y-auto">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-6">
               {messages.map((message) => (
@@ -215,7 +215,7 @@ function Chat() {
             </div>
           </div>
 
-          {/* Input Form */}
+    
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-t border-gray-200/50 dark:border-gray-700/50">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
               <form onSubmit={handleSubmit} className="flex space-x-4">
