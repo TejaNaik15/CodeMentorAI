@@ -60,9 +60,9 @@ function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-lg mx-auto pt-[10vh]">
-        {/* Glass Card Container */}
+        
         <div className="backdrop-blur-lg bg-white/70 dark:bg-gray-800/70 rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 animate-fadeIn overflow-hidden">
-          {/* Header Section */}
+       
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white text-center relative">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative">
@@ -93,14 +93,14 @@ function Login() {
           </div>
 
           <div className="p-8">
-            {/* Error Message */}
+        
             {error && (
               <div className="p-4 mb-6 bg-red-50/50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm animate-shake">
                 {error}
               </div>
             )}
 
-            {/* Form */}
+         
             <Formik
               initialValues={{ email: "", password: "" }}
               validationSchema={validationSchema}
@@ -215,7 +215,7 @@ function Login() {
               )}
             </Formik>
 
-            {/* Toggle Auth Mode */}
+       
             <p className="text-center text-gray-600 dark:text-gray-400 mt-6">
               {isRegistering
                 ? "Already have an account?"
