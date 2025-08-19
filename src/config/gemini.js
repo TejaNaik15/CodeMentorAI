@@ -1,4 +1,4 @@
-// src/config/gemini.js
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const getApiKey = () => {
@@ -12,8 +12,8 @@ export const initializeModel = () => {
     return null;
   }
 
-  // Use the model name from environment variables
-  const modelName = import.meta.env.VITE_GEMINI_MODEL_NAME || "gemini-1.5-flash"; // Changed
+  
+  const modelName = import.meta.env.VITE_GEMINI_MODEL_NAME || "gemini-1.5-flash"; 
 
   const genAI = new GoogleGenerativeAI(apiKey);
   return genAI.getGenerativeModel({ model: modelName });
