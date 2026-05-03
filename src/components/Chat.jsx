@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   collection,
   addDoc,
@@ -11,10 +11,14 @@ import {
 } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { db, auth } from "../config/firebase";
-import { model, initializeModel } from "../config/gemini";
+import { initializeModel } from "../config/gemini";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import Navigation from "./Navigation";
+
+const VIDEO_URL =
+  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4';
 
 function Chat() {
   const [messages, setMessages] = useState([]);
@@ -22,6 +26,54 @@ function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const [indexReady, setIndexReady] = useState(false);
   const [user] = useAuthState(auth);
+  const videoRef = useRef(null);
+  const rafRef = useRef(null);
+  const fadingOut = useRef(false);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    function animateOpacity(from, to, duration, onDone) {
+      const start = performance.now();
+      function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        v.style.opacity = from + (to - from) * t;
+        if (t < 1) rafRef.current = requestAnimationFrame(step);
+        else if (onDone) onDone();
+      }
+      rafRef.current = requestAnimationFrame(step);
+    }
+    function monitor() {
+      if (v.duration && !fadingOut.current) {
+        const remaining = v.duration - v.currentTime;
+        if (remaining <= 0.5) {
+          fadingOut.current = true;
+          animateOpacity(1, 0, 500);
+        }
+      }
+      rafRef.current = requestAnimationFrame(monitor);
+    }
+    const onCanPlay = () => {
+      v.play().catch(() => {});
+      animateOpacity(0, 1, 500, () => { rafRef.current = requestAnimationFrame(monitor); });
+    };
+    const onEnded = () => {
+      fadingOut.current = false;
+      v.style.opacity = 0;
+      setTimeout(() => {
+        v.currentTime = 0;
+        v.play().catch(() => {});
+        animateOpacity(0, 1, 500, () => { rafRef.current = requestAnimationFrame(monitor); });
+      }, 100);
+    };
+    v.addEventListener('canplay', onCanPlay);
+    v.addEventListener('ended', onEnded);
+    return () => {
+      v.removeEventListener('canplay', onCanPlay);
+      v.removeEventListener('ended', onEnded);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -145,90 +197,127 @@ function Chat() {
   );
 
   const LoadingDots = () => (
-    <div className="flex space-x-1 items-center justify-center">
-      <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-      <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-      <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-bounce"></div>
+    <div className="flex space-x-1 items-center">
+      <div className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+      <div className="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+      <div className="w-2 h-2 bg-black rounded-full animate-bounce"></div>
     </div>
   );
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-     
-      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-                AI Chat Assistant
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Get answers. Find inspiration. Be more productive.</p>
-            </div>
+    <div className="relative h-screen w-full overflow-hidden bg-white flex flex-col">
+      {/* Video background */}
+      <video
+        ref={videoRef}
+        src={VIDEO_URL}
+        muted
+        playsInline
+        preload="auto"
+        className="absolute w-full object-cover pointer-events-none"
+        style={{ opacity: 0, top: '300px', inset: 'auto 0 0 0' }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white pointer-events-none z-[1]" />
+
+      {/* Navigation */}
+      <div className="relative z-20">
+        <Navigation />
+      </div>
+
+      {/* Chat header */}
+      <div className="relative z-10 bg-white/70 backdrop-blur-lg border-b border-gray-200/50">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+          </div>
+          <div>
+            <h1
+              className="text-xl"
+              style={{ fontFamily: "'Instrument Serif', serif", color: '#000000' }}
+            >
+              AI Chat Assistant
+            </h1>
+            <p className="text-sm" style={{ color: '#6F6F6F', fontFamily: "'Inter', sans-serif" }}>
+              Get answers. Find inspiration. Be more productive.
+            </p>
           </div>
         </div>
       </div>
 
+      {/* Body */}
       {!indexReady ? (
-        <div className="flex-1 flex items-center justify-center p-4">
-          <div className="text-center space-y-4 p-8 bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg rounded-2xl shadow-xl max-w-md w-full mx-auto">
-            <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center animate-pulse">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="relative z-10 flex-1 flex items-center justify-center p-4">
+          <div className="text-center space-y-4 p-8 bg-white/70 backdrop-blur-lg rounded-2xl border border-gray-200/50 shadow-sm max-w-md w-full">
+            <div className="w-14 h-14 mx-auto rounded-full bg-black flex items-center justify-center animate-pulse">
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <p className="text-gray-600 dark:text-gray-300 font-medium">Setting up the chat... This may take a few moments.</p>
+            <p style={{ color: '#6F6F6F', fontFamily: "'Inter', sans-serif" }}>Setting up the chat... This may take a few moments.</p>
             <LoadingDots />
           </div>
         </div>
       ) : (
         <>
-    
-          <div className="flex-1 overflow-y-auto">
+          {/* Messages */}
+          <div className="relative z-10 flex-1 overflow-y-auto">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-6">
               {messages.map((message) => (
-                <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-slideIn`}>
-                  <div className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-5 py-4 shadow-lg transition-transform hover:scale-[1.02] ${message.role === "user" ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white ml-4" : "bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700/50 mr-4"}`}>
-                    <div className={`text-sm mb-1 flex items-center space-x-2 ${message.role === "user" ? "text-blue-100" : "text-gray-500 dark:text-gray-400"}`}>
-                      {message.role === "user" ? <span>You</span> : <span>AI Assistant</span>}
+                <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div
+                    className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-5 py-4 ${
+                      message.role === 'user'
+                        ? 'bg-black text-white ml-4'
+                        : 'bg-white/80 backdrop-blur-sm border border-gray-200/60 mr-4'
+                    }`}
+                  >
+                    <div
+                      className="text-xs mb-2"
+                      style={{
+                        color: message.role === 'user' ? 'rgba(255,255,255,0.6)' : '#6F6F6F',
+                        fontFamily: "'Inter', sans-serif",
+                      }}
+                    >
+                      {message.role === 'user' ? 'You' : 'AI Assistant'}
                     </div>
-                    <div className={message.role === "user" ? "text-white" : "text-gray-800 dark:text-gray-200"}>
+                    <div style={{ color: message.role === 'user' ? '#fff' : '#000000' }}>
                       <MessageContent text={message.text} />
                     </div>
                   </div>
                 </div>
               ))}
               {isLoading && (
-                <div className="flex justify-start animate-fadeIn">
-                  <div className="max-w-[85%] sm:max-w-[75%] bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl px-5 py-4 border border-gray-100 dark:border-gray-700/50 mr-4 shadow-lg">
-                    <div className="text-sm mb-1 flex items-center space-x-2 text-gray-500 dark:text-gray-400">
-                      <span>AI Assistant</span>
-                      <LoadingDots />
-                    </div>
+                <div className="flex justify-start">
+                  <div className="bg-white/80 backdrop-blur-sm border border-gray-200/60 rounded-2xl px-5 py-4 mr-4">
+                    <div className="text-xs mb-2" style={{ color: '#6F6F6F', fontFamily: "'Inter', sans-serif" }}>AI Assistant</div>
+                    <LoadingDots />
                   </div>
                 </div>
               )}
             </div>
           </div>
 
-    
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-t border-gray-200/50 dark:border-gray-700/50">
+          {/* Input bar */}
+          <div className="relative z-10 bg-white/70 backdrop-blur-lg border-t border-gray-200/50">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
-              <form onSubmit={handleSubmit} className="flex space-x-4">
+              <form onSubmit={handleSubmit} className="flex gap-3">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Ask a programming question..."
                   disabled={isLoading}
-                  className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+                  className="flex-1 px-5 py-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-400 disabled:opacity-50 transition-all"
+                  style={{ color: '#000000', fontFamily: "'Inter', sans-serif" }}
                 />
-                <button type="submit" disabled={isLoading} className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                  {isLoading ? "Sending..." : "Send"}
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="rounded-full px-6 py-3 text-sm text-white disabled:opacity-50 hover:scale-[1.03] transition-transform"
+                  style={{ backgroundColor: '#000000', fontFamily: "'Inter', sans-serif" }}
+                >
+                  {isLoading ? 'Sending...' : 'Send'}
                 </button>
               </form>
             </div>
