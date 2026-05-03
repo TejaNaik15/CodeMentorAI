@@ -22,7 +22,7 @@ function App() {
 
   return (
     <Router>
-      <div className="app">
+      <div className="app h-full">
         <Routes>
           <Route path="/" element={<><Navigation /><Home /></>} />
           <Route

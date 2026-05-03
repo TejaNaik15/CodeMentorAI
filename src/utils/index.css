@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+}
+
 @layer utilities {
   .animate-fade-rise {
     animation: fadeRise 0.8s ease-out forwards;

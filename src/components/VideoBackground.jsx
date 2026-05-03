@@ -63,21 +63,20 @@ export default function VideoBackground({ children }) {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-white">
-      {/* Video layer - fixed so it always fills viewport on all screen sizes */}
+    <div className="relative min-h-screen w-full overflow-hidden bg-white" style={{ isolation: 'isolate' }}>
+      {/* Video layer */}
       <video
         ref={videoRef}
         src={VIDEO_URL}
         muted
         playsInline
         preload="auto"
-        className="fixed inset-0 w-full h-full object-cover pointer-events-none"
-        style={{ opacity: 0, objectPosition: 'center bottom' }}
+        style={{ opacity: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
       />
       {/* Gradient overlays */}
-      <div className="fixed inset-0 bg-gradient-to-b from-white/90 via-white/30 to-white/90 pointer-events-none z-[1]" />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.8) 100%)', zIndex: 1, pointerEvents: 'none' }} />
       {/* Content */}
-      <div className="relative z-10">
+      <div style={{ position: 'relative', zIndex: 2 }}>
         {children}
       </div>
     </div>
