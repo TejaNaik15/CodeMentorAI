@@ -13,6 +13,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Navigation from "./components/Navigation";
 import "./utils/index.css";
 import ApiKeyPrompt from "./components/ApiKeyPrompt";
+import LandingPage from "./components/landing/LandingPage";
 
 function App() {
   const [user] = useAuthState(auth);
@@ -24,9 +25,9 @@ function App() {
   return (
     <Router>
       <div className="app">
-        <Navigation />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/home" element={<><Navigation /><Home /></>} />
           <Route
             path="/chat"
             element={
