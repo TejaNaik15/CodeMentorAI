@@ -206,17 +206,17 @@ function Chat() {
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-white flex flex-col">
-      {/* Video background */}
+      {/* Video background - fixed so it fills viewport on all screen sizes */}
       <video
         ref={videoRef}
         src={VIDEO_URL}
         muted
         playsInline
         preload="auto"
-        className="absolute w-full object-cover pointer-events-none"
-        style={{ opacity: 0, top: '300px', inset: 'auto 0 0 0' }}
+        className="fixed inset-0 w-full h-full object-cover pointer-events-none"
+        style={{ opacity: 0, objectPosition: 'center bottom' }}
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white pointer-events-none z-[1]" />
+      <div className="fixed inset-0 bg-gradient-to-b from-white/90 via-white/30 to-white/90 pointer-events-none z-[1]" />
 
       {/* Navigation */}
       <div className="relative z-20">
