@@ -23,29 +23,32 @@ function Navigation() {
   const NavLink = ({ to, children }) => (
     <Link
       to={to}
-      className="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 px-4 py-2 rounded-lg
-                   transition-colors duration-200 font-medium text-sm
-                   hover:bg-blue-50 dark:hover:bg-gray-800"
+      className="text-sm transition-colors"
+      style={{ color: '#6F6F6F', fontFamily: "'Inter', sans-serif" }}
     >
       {children}
     </Link>
   );
 
   return (
-    <nav className="bg-gradient-to-r from-indigo-900/80 via-purple-900/80 to-pink-900/80 backdrop-blur-lg border-b border-gray-700/50 sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex justify-between items-center h-16">
+    <nav className="bg-white/80 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-8 py-6">
+        <div className="flex justify-between items-center">
 
-         
-          <div className="flex items-center space-x-3">
-            <Link to="/" className="flex items-center space-x-3">
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-                CodeMentorAI
+          {/* Logo */}
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center">
+              <span
+                className="text-3xl tracking-tight"
+                style={{ fontFamily: "'Instrument Serif', serif", color: '#000000' }}
+              >
+                CodeMentorAI<sup className="text-lg">®</sup>
               </span>
             </Link>
           </div>
 
-          <div className="hidden sm:flex items-center space-x-2">
+          {/* Desktop nav */}
+          <div className="hidden sm:flex items-center gap-8">
             <NavLink to="/">Home</NavLink>
             {user ? (
               <>
@@ -53,35 +56,32 @@ function Navigation() {
                 <div className="relative" ref={menuRef}>
                   <button
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="flex items-center space-x-2 ml-2 px-4 py-2 rounded-lg
-                               text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400
-                               hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors duration-200"
+                    className="flex items-center gap-2 text-sm transition-colors"
+                    style={{ color: '#6F6F6F', fontFamily: "'Inter', sans-serif" }}
                   >
                     <img
                       src={user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`}
                       alt="Profile"
                       className="w-6 h-6 rounded-full"
                     />
-                    <span className="text-sm font-medium">{user.email}</span>
+                    <span>{user.email}</span>
                     <svg className={`w-4 h-4 transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
-
                   {isMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg py-1 border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-lg">
-                      <div className="px-4 py-2 border-b border-gray-200/50 dark:border-gray-700/50">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user.email}</p>
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-1 border border-gray-200/50">
+                      <div className="px-4 py-2 border-b border-gray-200/50">
+                        <p className="text-sm font-medium text-gray-900 truncate">{user.email}</p>
                       </div>
                       <button
                         onClick={logoutUser}
-                        className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20
-                                 transition-colors duration-200 font-medium flex items-center space-x-2"
+                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium flex items-center gap-2"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
-                        <span>Logout</span>
+                        Logout
                       </button>
                     </div>
                   )}
@@ -90,21 +90,20 @@ function Navigation() {
             ) : (
               <Link
                 to="/auth"
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700
-                           text-white px-6 py-2 rounded-lg font-medium text-sm
-                           transition-all duration-200 shadow-md hover:shadow-lg
-                           transform hover:-translate-y-0.5"
+                className="rounded-full px-6 py-2.5 text-sm text-white hover:scale-[1.03] transition-transform duration-200"
+                style={{ backgroundColor: '#000000', fontFamily: "'Inter', sans-serif" }}
               >
-                Login
+                Begin Journey
               </Link>
             )}
           </div>
 
+          {/* Mobile hamburger */}
           <div className="sm:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400
-                       p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors duration-200"
+              className="p-2 rounded-lg transition-colors"
+              style={{ color: '#000000' }}
             >
               {isMenuOpen ? (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,43 +118,41 @@ function Navigation() {
           </div>
         </div>
 
+        {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="sm:hidden border-t border-gray-200/50 dark:border-gray-700/50 py-2">
-            <div className="space-y-1 px-2">
+          <div className="sm:hidden border-t border-gray-200/50 py-4 mt-2">
+            <div className="space-y-2">
               <NavLink to="/">Home</NavLink>
               {user ? (
                 <>
                   <NavLink to="/chat">Chat</NavLink>
-                  <div className="px-4 py-2 border-t border-gray-200/50 dark:border-gray-700/50 mt-2">
-                    <div className="flex items-center space-x-3 mb-3">
+                  <div className="px-2 pt-2 border-t border-gray-200/50 mt-2">
+                    <div className="flex items-center gap-3 mb-3">
                       <img
                         src={user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`}
                         alt="Profile"
                         className="w-8 h-8 rounded-full"
                       />
-                      <span className="text-sm font-medium text-gray-900 dark:text-white truncate">{user.email}</span>
+                      <span className="text-sm font-medium text-gray-900 truncate">{user.email}</span>
                     </div>
                     <button
                       onClick={logoutUser}
-                      className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20
-                               rounded-lg transition-colors duration-200 font-medium flex items-center space-x-2"
-                      >
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium flex items-center gap-2"
+                    >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>
-                      <span>Logout</span>
+                      Logout
                     </button>
                   </div>
                 </>
               ) : (
                 <Link
                   to="/auth"
-                  className="block bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700
-                             text-white px-4 py-2 rounded-lg font-medium text-sm
-                             transition-all duration-200 shadow-md hover:shadow-lg
-                             transform hover:-translate-y-0.5 mx-2"
+                  className="block rounded-full px-6 py-2.5 text-sm text-white text-center mx-2 hover:scale-[1.03] transition-transform duration-200"
+                  style={{ backgroundColor: '#000000', fontFamily: "'Inter', sans-serif" }}
                 >
-                  Login
+                  Begin Journey
                 </Link>
               )}
             </div>

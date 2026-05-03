@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { FaRobot, FaCode, FaLock, FaGithub, FaLightbulb, FaBrain } from "react-icons/fa";
+import { FaRobot, FaLock, FaGithub, FaLightbulb, FaBrain } from "react-icons/fa";
 import { motion } from "framer-motion";
+import VideoBackground from "./VideoBackground";
 
 function Landing() {
   const navigate = useNavigate();
@@ -27,47 +28,39 @@ function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
-      
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
-      </div>
-
-      <div className="container mx-auto px-4 py-16 relative z-10">
+    <VideoBackground>
+      <div className="container mx-auto px-6 text-center" style={{ paddingTop: 'calc(8rem - 75px)', paddingBottom: '10rem' }}>
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="text-center"
+          className="flex flex-col items-center justify-center"
         >
-          <motion.div variants={itemVariants} className="mb-8">
-            <div className="w-20 h-20 mx-auto bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-lg transform -rotate-12 mb-6">
-              <FaRobot className="w-12 h-12 text-white mx-auto transform translate-y-4" />
-            </div>
-          </motion.div>
-
-          <motion.h1 
-            variants={itemVariants}
-            className="text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-transparent bg-clip-text"
+          <h1
+            className="animate-fade-rise max-w-5xl font-normal text-5xl sm:text-7xl md:text-8xl text-[#000000]"
+            style={{
+              fontFamily: "'Instrument Serif', serif",
+              lineHeight: 0.95,
+              letterSpacing: '-2.46px',
+            }}
           >
-            AI-Powered Developer Assistant
-          </motion.h1>
+            AI-Powered{' '}
+            <em className="italic" style={{ color: '#6F6F6F' }}>Developer</em>{' '}
+            Assistant
+          </h1>
 
-          <motion.p 
-            variants={itemVariants}
-            className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed"
+          <p
+            className="animate-fade-rise-delay text-base sm:text-lg max-w-2xl mt-8 leading-relaxed"
+            style={{ color: '#6F6F6F', fontFamily: "'Inter', sans-serif" }}
           >
-           Experience a new era of coding where an AI companion understands your needs, resolves your challenges, and helps you create exceptional software.
-          </motion.p>
+            Experience a new era of coding where an AI companion understands your needs, resolves your challenges, and helps you create exceptional software.
+          </p>
 
-          <motion.div variants={itemVariants} className="flex justify-center gap-6 flex-wrap">
+          <div className="animate-fade-rise-delay-2 flex justify-center gap-6 flex-wrap mt-12">
             <button
               onClick={() => navigate("/auth")}
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700
-                       text-white rounded-xl font-semibold text-lg flex items-center gap-3 transform hover:-translate-y-1
-                       transition-all duration-200 shadow-lg hover:shadow-2xl"
+              className="rounded-full px-14 py-5 text-base text-white hover:scale-[1.03] transition-transform duration-200 flex items-center gap-3"
+              style={{ backgroundColor: '#000000', fontFamily: "'Inter', sans-serif" }}
             >
               <FaRobot className="text-xl" />
               Start Coding Now
@@ -77,17 +70,16 @@ function Landing() {
               href="https://github.com/TejaNaik15/CodeMentorAI"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-4 bg-gray-800/50 hover:bg-gray-800/70 backdrop-blur-lg
-                       text-white rounded-xl font-semibold text-lg flex items-center gap-3
-                       transform hover:-translate-y-1 transition-all duration-200 border border-gray-700"
+              className="rounded-full px-14 py-5 text-base flex items-center gap-3 hover:scale-[1.03] transition-transform duration-200 border border-gray-300"
+              style={{ color: '#000000', fontFamily: "'Inter', sans-serif" }}
             >
               <FaGithub className="text-xl" />
               View on GitHub
             </a>
-          </motion.div>
+          </div>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -117,7 +109,7 @@ function Landing() {
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          animate="visible" 
+          animate="visible"
           className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8"
         >
           <StatCard number="100+" label="Programming Languages" />
@@ -126,7 +118,7 @@ function Landing() {
           <StatCard number="5⭐" label="Average Rating" />
         </motion.div>
       </div>
-    </div>
+    </VideoBackground>
   );
 }
 
@@ -134,15 +126,15 @@ function FeatureCard({ icon, title, description, gradient }) {
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className={`bg-gray-800/40 backdrop-blur-lg p-8 rounded-2xl border border-gray-700/50
-                hover:border-gray-600/50 transition-all duration-300 group`}
+      className={`bg-white/60 backdrop-blur-lg p-8 rounded-2xl border border-gray-200/60
+                hover:border-gray-300 transition-all duration-300 group shadow-sm`}
     >
       <div className={`w-14 h-14 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center
                     transform group-hover:scale-110 transition-transform duration-300`}>
         <div className="text-white text-2xl">{icon}</div>
       </div>
-      <h3 className="text-white text-xl font-semibold mt-6 mb-4">{title}</h3>
-      <p className="text-gray-400 leading-relaxed">{description}</p>
+      <h3 className="text-[#000000] text-xl font-semibold mt-6 mb-4" style={{ fontFamily: "'Inter', sans-serif" }}>{title}</h3>
+      <p className="text-[#6F6F6F] leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>{description}</p>
     </motion.div>
   );
 }
@@ -151,35 +143,15 @@ function StatCard({ number, label }) {
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
-      className="text-center p-6 bg-gray-800/40 backdrop-blur-lg rounded-2xl border border-gray-700/50"
+      className="text-center p-6 bg-white/60 backdrop-blur-lg rounded-2xl border border-gray-200/60 shadow-sm"
     >
-      <div className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 text-transparent bg-clip-text mb-2">
+      <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text mb-2"
+        style={{ fontFamily: "'Instrument Serif', serif" }}>
         {number}
       </div>
-      <div className="text-gray-400 text-sm">{label}</div>
+      <div className="text-[#6F6F6F] text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>{label}</div>
     </motion.div>
   );
 }
-
-
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes blob {
-    0% { transform: translate(0px, 0px) scale(1); }
-    33% { transform: translate(30px, -50px) scale(1.1); }
-    66% { transform: translate(-20px, 20px) scale(0.9); }
-    100% { transform: translate(0px, 0px) scale(1); }
-  }
-  .animate-blob {
-    animation: blob 7s infinite;
-  }
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
-  .animation-delay-4000 {
-    animation-delay: 4s;
-  }
-`;
-document.head.appendChild(style);
 
 export default Landing;
