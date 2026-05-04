@@ -13,7 +13,7 @@ export const initializeModel = () => {
   }
 
   
-  const modelName = import.meta.env.VITE_GEMINI_MODEL_NAME || "gemini-1.5-flash"; 
+  const modelName = import.meta.env.VITE_GEMINI_MODEL_NAME || "gemini-2.0-flash";
 
   const genAI = new GoogleGenerativeAI(apiKey);
   return genAI.getGenerativeModel({ model: modelName });
