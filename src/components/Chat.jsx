@@ -11,7 +11,7 @@ import {
 } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { db, auth } from "../config/firebase";
-import { initializeModel } from "../config/gemini";
+import { generateWithFallback } from "../config/gemini";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -136,13 +136,9 @@ function Chat() {
         userId: user.uid,
       });
 
-      const currentModel = initializeModel();
-      if (!currentModel) throw new Error("API key not found. Please set it.");
-
-      const result = await currentModel.generateContent(
+      const response = await generateWithFallback(
         `You are a programming assistant. User question: ${newMessage}`
       );
-      const response = result.response.text();
 
       await addDoc(collection(db, "messages"), {
         text: response,
@@ -153,9 +149,13 @@ function Chat() {
       });
     } catch (error) {
       console.error("Error:", error);
+      const isQuota = error.message?.includes("quota") || error.message?.includes("429");
+      const friendlyMsg = isQuota
+        ? "⚠️ API quota exceeded. Please get a new API key at https://aistudio.google.com/app/apikey or wait 24 hours for the quota to reset."
+        : "Error: " + error.message;
       setMessages((prev) => [
         ...prev,
-        { id: Date.now(), text: "Error: " + error.message, role: "ai", userId: user.uid },
+        { id: Date.now(), text: friendlyMsg, role: "ai", userId: user.uid },
       ]);
     } finally {
       setNewMessage("");
