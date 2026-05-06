@@ -1,6 +1,6 @@
-# CodeMentorAI®
+# CodeMentorAI
 
-> An AI-powered developer assistant built with React, Firebase, and Google Gemini — featuring real-time chat, secure authentication, and a cinematic animated UI.
+> An AI-powered developer assistant built with React, Firebase, and Groq — featuring real-time chat, secure authentication, and a cinematic animated UI.
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
 [![Firebase](https://img.shields.io/badge/Firebase-12-FFCA28?logo=firebase)](https://firebase.google.com)
@@ -52,14 +52,14 @@
 | **Google OAuth** | One-click sign-in with Google popup |
 | **Session Persistence** | Auth state persisted via `browserLocalPersistence` |
 | **Protected Routes** | Unauthenticated users are redirected to `/auth` |
-| **Gemini API Key Prompt** | Users supply their own Gemini API key, stored in `localStorage` |
-| **AI Model Fallback** | Tries `gemini-1.5-flash-latest` → `gemini-1.5-pro-latest` → `gemini-pro` on quota errors |
+| **Groq API Key Prompt** | Users supply their own Groq API key, stored in `localStorage` |
+| **AI Model Fallback** | Tries `llama-3.3-70b-versatile` → `llama3-70b-8192` on rate limit errors |
 | **Real-time Chat** | Messages stored in Firestore, streamed live via `onSnapshot` |
 | **Per-user Chat History** | All messages are scoped to `userId`, fully private |
 | **Welcome Message** | Auto-injected on first login if no messages exist |
 | **Markdown Rendering** | AI responses rendered with `react-markdown` |
 | **Syntax Highlighting** | Code blocks highlighted with `react-syntax-highlighter` (VSCode Dark+ theme) |
-| **Animated Video Background** | Looping background video with custom fade-in/fade-out via `requestAnimationFrame` |
+| **Animated Video Background** | Seamlessly looping background video with CSS fade-in, fully supported on iOS Safari |
 | **Responsive Navigation** | Desktop nav + mobile hamburger menu with user avatar dropdown |
 | **Form Validation** | Login/register forms validated with Formik + Yup |
 | **Framer Motion Animations** | Staggered entrance animations on landing page |
@@ -82,11 +82,10 @@
 - **Firebase Messaging** — Initialized (ready for push notifications)
 
 ### AI
-- **Google Generative AI SDK (`@google/generative-ai`)** — Gemini API client
+- **Groq SDK (`groq-sdk`)** — Groq API client
 - Models used (in fallback order):
-  1. `gemini-1.5-flash-latest`
-  2. `gemini-1.5-pro-latest`
-  3. `gemini-pro`
+  1. `llama-3.3-70b-versatile` — primary, best for code
+  2. `llama3-70b-8192` — fallback on rate limit
 
 ### Forms
 - **Formik 2** — Form state management
@@ -107,7 +106,7 @@ CodeMentorAI/
 ├── src/
 │   ├── assets/
 │   ├── components/
-│   │   ├── ApiKeyPrompt.jsx      # Gemini API key entry modal
+│   │   ├── ApiKeyPrompt.jsx      # Groq API key entry modal
 │   │   ├── Chat.jsx              # Main chat interface
 │   │   ├── Home.jsx              # Landing page
 │   │   ├── Login.jsx             # Auth page (login + register)
@@ -116,7 +115,7 @@ CodeMentorAI/
 │   │   └── VideoBackground.jsx   # Animated video background wrapper
 │   ├── config/
 │   │   ├── firebase.js           # Firebase app init (Auth, Firestore, Messaging)
-│   │   └── gemini.js             # Gemini model init + fallback logic
+│   │   └── gemini.js             # Groq model init + fallback logic
 │   ├── utils/
 │   │   ├── auth.js               # Auth helper functions
 │   │   └── index.css             # Global styles
@@ -143,12 +142,12 @@ User
  └─► /chat (protected)    → Chat.jsx
           │
           ├─► Firestore (onSnapshot) ──► real-time messages
-          └─► Gemini API ─────────────► AI response (with model fallback)
+          └─► Groq API ──────────────► AI response (with model fallback)
 ```
 
 **Message flow in Chat:**
 1. User submits a message → saved to Firestore (`role: "user"`)
-2. Message text sent to Gemini via `generateWithFallback()`
+2. Message text sent to Groq via `generateWithFallback()`
 3. AI response saved to Firestore (`role: "ai"`, `replyTo: userMessageId`)
 4. `onSnapshot` listener updates the UI in real time
 
@@ -168,8 +167,8 @@ User
 - Auto-injects a welcome message on first login
 - Renders AI responses with full Markdown + syntax highlighting
 - Loading dots animation while awaiting AI response
-- Quota error handling with friendly user-facing messages
-- Animated video background with custom `requestAnimationFrame` fade logic
+- Rate limit error handling with friendly user-facing messages
+- Seamlessly looping video background with CSS fade-in on load
 
 ### `Login.jsx` — Authentication
 - Toggles between Sign In and Create Account modes
@@ -178,19 +177,20 @@ User
 - Error display with animated shake
 
 ### `Navigation.jsx` — Navbar
-- Sticky top bar with `CodeMentorAI®` logo
+- Sticky top bar with `CodeMentorAI` logo
 - Desktop: Home, Chat links + user avatar dropdown with logout
 - Mobile: hamburger menu with same options
 - Shows user email + avatar (Google photo or `ui-avatars.com` fallback)
 
 ### `ApiKeyPrompt.jsx` — API Key Entry
-- Shown after login if no Gemini API key is in `localStorage`
-- Saves key to `localStorage` under `gemini_api_key`
-- Links to Google AI Studio to get a key
+- Shown after login if no Groq API key is in `localStorage`
+- Saves key to `localStorage` under `groq_api_key`
+- Links to [https://console.groq.com/keys](https://console.groq.com/keys) to get a key
 
 ### `VideoBackground.jsx` — Background Wrapper
 - Loads a hosted `.mp4` via CloudFront CDN
-- Custom fade-in on load, fade-out before loop end using `requestAnimationFrame`
+- CSS fade-in on `canplaythrough`, seamless native `loop` — no white flash
+- `webkit-playsinline` + `playsInline` for full iOS Safari support
 - Gradient overlay for readability
 - Reusable wrapper — used on Home, Login, ApiKeyPrompt pages
 
@@ -218,19 +218,18 @@ Located in `src/config/gemini.js`:
 
 ```js
 // API key is read from localStorage at call time
-const getApiKey = () => localStorage.getItem("gemini_api_key");
+const getApiKey = () => localStorage.getItem("groq_api_key");
 
 // Model fallback order
 const MODELS = [
-  "gemini-1.5-flash-latest",
-  "gemini-1.5-pro-latest",
-  "gemini-pro",
+  "llama-3.3-70b-versatile",
+  "llama3-70b-8192",
 ];
 ```
 
-`generateWithFallback(prompt)` iterates through models and falls back on `429` / quota errors. If all models are exhausted, it throws a user-friendly error with a link to get a new API key.
+`generateWithFallback(prompt)` iterates through models and falls back on `429` / rate limit errors. If all models are exhausted, it throws a user-friendly error with a link to get a new API key at [https://console.groq.com/keys](https://console.groq.com/keys).
 
-The prompt sent to Gemini is:
+The prompt sent to Groq is:
 ```
 You are a programming assistant. User question: <user input>
 ```
@@ -297,7 +296,7 @@ The Gemini API key is **not** stored in `.env` — it is entered by the user at 
 - Node.js >= 16
 - npm or yarn
 - A [Firebase project](https://console.firebase.google.com) with Auth (Email/Password + Google) and Firestore enabled
-- A [Google AI Studio](https://aistudio.google.com/app/apikey) account for a Gemini API key
+- A [Groq Console](https://console.groq.com/keys) account for a Groq API key
 
 ### Installation
 
@@ -353,7 +352,7 @@ npm run preview
 | `react-dom` | ^19.1.1 | DOM renderer |
 | `react-router-dom` | ^7.8.1 | Client-side routing |
 | `firebase` | ^12.1.0 | Auth + Firestore + Messaging |
-| `@google/generative-ai` | ^0.24.1 | Gemini API client |
+| `groq-sdk` | ^0.9.1 | Groq API client |
 | `react-firebase-hooks` | ^5.1.1 | `useAuthState` hook |
 | `react-markdown` | ^10.1.0 | Markdown rendering |
 | `react-syntax-highlighter` | ^15.6.1 | Code block highlighting |
@@ -375,7 +374,7 @@ npm run preview
 
 ## Known Limitations
 
-- **Gemini API key in localStorage** — The key is stored client-side. For production, consider a backend proxy to keep the key server-side.
+- **Groq API key in localStorage** — The key is stored client-side. For production, consider a backend proxy to keep the key server-side.
 - **No message deletion** — There is currently no UI to clear chat history.
 - **Firestore index** — The composite index must be manually created in the Firebase Console for the ordered query to work.
 - **No streaming responses** — AI responses are returned in full after generation completes, not streamed token-by-token.
