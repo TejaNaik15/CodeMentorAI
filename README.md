@@ -1,44 +1,394 @@
-# AI Chat Assistant
+# CodeMentorAI®
 
-A web-based AI-powered programming assistant that helps users with coding questions, powered by **Google Gemini API**, **Firebase Authentication**, and **Firestore Database**. This app allows users to chat with an AI assistant in real-time and store their chat history securely.
+> An AI-powered developer assistant built with React, Firebase, and Google Gemini — featuring real-time chat, secure authentication, and a cinematic animated UI.
+
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
+[![Firebase](https://img.shields.io/badge/Firebase-12-FFCA28?logo=firebase)](https://firebase.google.com)
+[![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite)](https://vitejs.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38BDF8?logo=tailwindcss)](https://tailwindcss.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Live Demo](#live-demo)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Architecture & Data Flow](#architecture--data-flow)
+- [Components](#components)
+- [Routing](#routing)
+- [AI Integration](#ai-integration)
+- [Authentication](#authentication)
+- [Firestore Database](#firestore-database)
+- [Environment Variables](#environment-variables)
+- [Getting Started](#getting-started)
+- [Available Scripts](#available-scripts)
+- [Dependencies](#dependencies)
+- [Known Limitations](#known-limitations)
+- [Contributing](#contributing)
+
+---
+
+## Overview
+
+**CodeMentorAI** is a full-stack web application that lets developers chat with an AI programming assistant powered by Google Gemini. Every conversation is persisted in Firestore and scoped to the authenticated user. The UI features a cinematic animated video background, smooth Framer Motion transitions, and full Markdown + syntax-highlighted code rendering in AI responses.
+
+---
+
+## Live Demo
+
+🔗 [https://github.com/TejaNaik15/CodeMentorAI](https://github.com/TejaNaik15/CodeMentorAI)
 
 ---
 
 ## Features
 
-- **User Authentication:** Sign up and log in using Email/Password or Google account (via Firebase Auth).  
-- **Real-time Chat:** Messages are stored in Firestore and updated instantly.  
-- **AI Assistant:** Powered by Google Gemini API, provides programming help with code examples.  
-- **User-specific Chat History:** Each user's messages are private and secured.  
-- **Markdown Support:** Responses can display code blocks and formatted text using React Markdown.  
-- **Responsive & Modern UI:** Clean design with Tailwind CSS and animations.
+| Feature | Details |
+|---|---|
+| **Email/Password Auth** | Register & login via Firebase Authentication |
+| **Google OAuth** | One-click sign-in with Google popup |
+| **Session Persistence** | Auth state persisted via `browserLocalPersistence` |
+| **Protected Routes** | Unauthenticated users are redirected to `/auth` |
+| **Gemini API Key Prompt** | Users supply their own Gemini API key, stored in `localStorage` |
+| **AI Model Fallback** | Tries `gemini-1.5-flash-latest` → `gemini-1.5-pro-latest` → `gemini-pro` on quota errors |
+| **Real-time Chat** | Messages stored in Firestore, streamed live via `onSnapshot` |
+| **Per-user Chat History** | All messages are scoped to `userId`, fully private |
+| **Welcome Message** | Auto-injected on first login if no messages exist |
+| **Markdown Rendering** | AI responses rendered with `react-markdown` |
+| **Syntax Highlighting** | Code blocks highlighted with `react-syntax-highlighter` (VSCode Dark+ theme) |
+| **Animated Video Background** | Looping background video with custom fade-in/fade-out via `requestAnimationFrame` |
+| **Responsive Navigation** | Desktop nav + mobile hamburger menu with user avatar dropdown |
+| **Form Validation** | Login/register forms validated with Formik + Yup |
+| **Framer Motion Animations** | Staggered entrance animations on landing page |
 
 ---
 
 ## Tech Stack
 
-- **Frontend:** React.js, Tailwind CSS, React Router  
-- **Backend:** Firebase (Auth + Firestore)  
-- **AI:** Google Gemini API  
-- **State Management:** React Hooks (`useState`, `useEffect`)  
-- **Syntax Highlighting:** `react-syntax-highlighter`
+### Frontend
+- **React 19** — UI library
+- **React Router DOM 7** — Client-side routing
+- **Tailwind CSS 3** — Utility-first styling
+- **Framer Motion 12** — Animations and transitions
+- **React Icons 5** — Icon library
+- **Lucide React** — Additional icon set
+
+### Backend / Cloud
+- **Firebase Auth 12** — Email/password + Google OAuth
+- **Firestore** — NoSQL real-time database for chat messages
+- **Firebase Messaging** — Initialized (ready for push notifications)
+
+### AI
+- **Google Generative AI SDK (`@google/generative-ai`)** — Gemini API client
+- Models used (in fallback order):
+  1. `gemini-1.5-flash-latest`
+  2. `gemini-1.5-pro-latest`
+  3. `gemini-pro`
+
+### Forms
+- **Formik 2** — Form state management
+- **Yup** — Schema-based validation
+
+### Build
+- **Vite 7** — Dev server and bundler
+- **ESLint 9** — Linting
 
 ---
 
+## Project Structure
 
+```
+CodeMentorAI/
+├── public/
+│   └── cmai.png                  # App logo/favicon asset
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   ├── ApiKeyPrompt.jsx      # Gemini API key entry modal
+│   │   ├── Chat.jsx              # Main chat interface
+│   │   ├── Home.jsx              # Landing page
+│   │   ├── Login.jsx             # Auth page (login + register)
+│   │   ├── Navigation.jsx        # Top navbar (desktop + mobile)
+│   │   ├── PrivateRoute.jsx      # Auth guard wrapper
+│   │   └── VideoBackground.jsx   # Animated video background wrapper
+│   ├── config/
+│   │   ├── firebase.js           # Firebase app init (Auth, Firestore, Messaging)
+│   │   └── gemini.js             # Gemini model init + fallback logic
+│   ├── utils/
+│   │   ├── auth.js               # Auth helper functions
+│   │   └── index.css             # Global styles
+│   ├── App.jsx                   # Root component + route definitions
+│   └── main.jsx                  # React DOM entry point
+├── .env                          # Environment variables (not committed)
+├── index.html
+├── package.json
+├── tailwind.config.js
+├── vite.config.js
+└── postcss.config.js
+```
+
+---
+
+## Architecture & Data Flow
+
+```
+User
+ │
+ ├─► /  (Landing)         → Home.jsx + VideoBackground
+ ├─► /auth                → Login.jsx (Formik + Firebase Auth)
+ ├─► /api-key             → ApiKeyPrompt.jsx (saves key to localStorage)
+ └─► /chat (protected)    → Chat.jsx
+          │
+          ├─► Firestore (onSnapshot) ──► real-time messages
+          └─► Gemini API ─────────────► AI response (with model fallback)
+```
+
+**Message flow in Chat:**
+1. User submits a message → saved to Firestore (`role: "user"`)
+2. Message text sent to Gemini via `generateWithFallback()`
+3. AI response saved to Firestore (`role: "ai"`, `replyTo: userMessageId`)
+4. `onSnapshot` listener updates the UI in real time
+
+---
+
+## Components
+
+### `Home.jsx` — Landing Page
+- Animated hero section with `Framer Motion` stagger
+- Feature cards: AI-Powered Intelligence, Smart Solutions, Secure & Private
+- Stats row: 100+ Languages, 24/7 Availability, 1M+ Developers, 5⭐ Rating
+- CTA buttons: "Start Coding Now" → `/auth`, "View on GitHub"
+- Wrapped in `VideoBackground`
+
+### `Chat.jsx` — Chat Interface
+- Real-time Firestore listener scoped to `user.uid`
+- Auto-injects a welcome message on first login
+- Renders AI responses with full Markdown + syntax highlighting
+- Loading dots animation while awaiting AI response
+- Quota error handling with friendly user-facing messages
+- Animated video background with custom `requestAnimationFrame` fade logic
+
+### `Login.jsx` — Authentication
+- Toggles between Sign In and Create Account modes
+- Formik form with Yup validation (email format, min 6-char password)
+- Google sign-in via popup
+- Error display with animated shake
+
+### `Navigation.jsx` — Navbar
+- Sticky top bar with `CodeMentorAI®` logo
+- Desktop: Home, Chat links + user avatar dropdown with logout
+- Mobile: hamburger menu with same options
+- Shows user email + avatar (Google photo or `ui-avatars.com` fallback)
+
+### `ApiKeyPrompt.jsx` — API Key Entry
+- Shown after login if no Gemini API key is in `localStorage`
+- Saves key to `localStorage` under `gemini_api_key`
+- Links to Google AI Studio to get a key
+
+### `VideoBackground.jsx` — Background Wrapper
+- Loads a hosted `.mp4` via CloudFront CDN
+- Custom fade-in on load, fade-out before loop end using `requestAnimationFrame`
+- Gradient overlay for readability
+- Reusable wrapper — used on Home, Login, ApiKeyPrompt pages
+
+### `PrivateRoute.jsx` — Auth Guard
+- Wraps protected routes (`/chat`, `/api-key`)
+- Redirects unauthenticated users to `/auth`
+- Shows loading state while Firebase resolves auth
+
+---
+
+## Routing
+
+| Path | Component | Protected |
+|---|---|---|
+| `/` | `Home` + `Navigation` | No |
+| `/auth` | `Login` in `VideoBackground` | Redirects to `/api-key` if logged in |
+| `/api-key` | `ApiKeyPrompt` in `VideoBackground` | Yes — redirects to `/chat` if key exists |
+| `/chat` | `Chat` | Yes — redirects to `/api-key` if no key |
+
+---
+
+## AI Integration
+
+Located in `src/config/gemini.js`:
+
+```js
+// API key is read from localStorage at call time
+const getApiKey = () => localStorage.getItem("gemini_api_key");
+
+// Model fallback order
+const MODELS = [
+  "gemini-1.5-flash-latest",
+  "gemini-1.5-pro-latest",
+  "gemini-pro",
+];
+```
+
+`generateWithFallback(prompt)` iterates through models and falls back on `429` / quota errors. If all models are exhausted, it throws a user-friendly error with a link to get a new API key.
+
+The prompt sent to Gemini is:
+```
+You are a programming assistant. User question: <user input>
+```
+
+---
+
+## Authentication
+
+Located in `src/utils/auth.js`:
+
+| Function | Description |
+|---|---|
+| `loginUser(email, password)` | Signs in with email/password |
+| `registerUser(email, password)` | Creates a new account |
+| `logoutUser()` | Signs out the current user |
+| `signInWithGoogle()` | Opens Google OAuth popup |
+| `subscribeToAuthChanges(cb)` | Subscribes to auth state changes |
+
+Firebase is configured with `browserLocalPersistence` so sessions survive page refreshes.
+
+---
+
+## Firestore Database
+
+Collection: `messages`
+
+| Field | Type | Description |
+|---|---|---|
+| `text` | string | Message content |
+| `role` | `"user"` \| `"ai"` | Sender type |
+| `userId` | string | Firebase UID of the owner |
+| `timestamp` | Timestamp | Server-side timestamp |
+| `replyTo` | string (optional) | ID of the user message this AI reply answers |
+| `isWelcomeMessage` | boolean (optional) | Marks the auto-injected welcome message |
+
+Messages are queried with `where("userId", "==", user.uid)` and ordered by `timestamp asc`.
+
+> **Note:** Firestore requires a composite index on `(userId, timestamp)` for the ordered query. The app handles the index-building delay gracefully with an `indexReady` state.
+
+---
+
+## Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+VITE_FIREBASE_API_KEY=<your-firebase-api-key>
+VITE_FIREBASE_AUTH_DOMAIN=<your-project>.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=<your-project-id>
+VITE_FIREBASE_STORAGE_BUCKET=<your-project>.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=<your-sender-id>
+VITE_FIREBASE_APP_ID=<your-app-id>
+VITE_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+The Gemini API key is **not** stored in `.env` — it is entered by the user at runtime and stored in `localStorage`.
+
+---
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js >= 16
-- NPM or Yarn
-- Firebase account
-- Google AI Studio account for Gemini API
+- npm or yarn
+- A [Firebase project](https://console.firebase.google.com) with Auth (Email/Password + Google) and Firestore enabled
+- A [Google AI Studio](https://aistudio.google.com/app/apikey) account for a Gemini API key
 
 ### Installation
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/TejaNaik15/ChatMentorAI.git
-   cd ChatMentorAI
+```bash
+git clone https://github.com/TejaNaik15/CodeMentorAI.git
+cd CodeMentorAI
+npm install
+```
+
+### Configure Firebase
+
+1. Go to [Firebase Console](https://console.firebase.google.com) → your project → Project Settings → Web App
+2. Copy the config values into your `.env` file (see [Environment Variables](#environment-variables))
+3. Enable **Authentication** → Sign-in methods: Email/Password + Google
+4. Enable **Firestore Database** in production or test mode
+5. Add the composite index: `messages` collection → fields: `userId (ASC)`, `timestamp (ASC)`
+
+### Run Locally
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173)
+
+### Build for Production
+
+```bash
+npm run build
+npm run preview
+```
+
+---
+
+## Available Scripts
+
+| Script | Description |
+|---|---|
+| `npm run dev` | Start Vite dev server |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` | Preview production build locally |
+| `npm run lint` | Run ESLint |
+
+---
+
+## Dependencies
+
+### Runtime
+
+| Package | Version | Purpose |
+|---|---|---|
+| `react` | ^19.1.1 | UI library |
+| `react-dom` | ^19.1.1 | DOM renderer |
+| `react-router-dom` | ^7.8.1 | Client-side routing |
+| `firebase` | ^12.1.0 | Auth + Firestore + Messaging |
+| `@google/generative-ai` | ^0.24.1 | Gemini API client |
+| `react-firebase-hooks` | ^5.1.1 | `useAuthState` hook |
+| `react-markdown` | ^10.1.0 | Markdown rendering |
+| `react-syntax-highlighter` | ^15.6.1 | Code block highlighting |
+| `framer-motion` | ^12.23.12 | Animations |
+| `formik` | ^2.4.6 | Form management |
+| `yup` | ^1.7.0 | Form validation schemas |
+| `react-icons` | ^5.5.0 | Icon components |
+| `lucide-react` | ^1.14.0 | Additional icons |
+
+### Dev
+
+| Package | Purpose |
+|---|---|
+| `vite` + `@vitejs/plugin-react` | Build tool |
+| `tailwindcss` + `postcss` + `autoprefixer` | CSS framework |
+| `eslint` + plugins | Linting |
+
+---
+
+## Known Limitations
+
+- **Gemini API key in localStorage** — The key is stored client-side. For production, consider a backend proxy to keep the key server-side.
+- **No message deletion** — There is currently no UI to clear chat history.
+- **Firestore index** — The composite index must be manually created in the Firebase Console for the ordered query to work.
+- **No streaming responses** — AI responses are returned in full after generation completes, not streamed token-by-token.
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m "feat: add your feature"`
+4. Push and open a Pull Request
+
+---
+
+<p align="center">Built by <a href="https://github.com/TejaNaik15">Teja Naik</a></p>

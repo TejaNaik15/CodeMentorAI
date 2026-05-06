@@ -53,10 +53,10 @@ function Chat() {
       }
       rafRef.current = requestAnimationFrame(monitor);
     }
-    const onCanPlay = () => {
+    function startPlay() {
       v.play().catch(() => {});
       animateOpacity(0, 1, 500, () => { rafRef.current = requestAnimationFrame(monitor); });
-    };
+    }
     const onEnded = () => {
       fadingOut.current = false;
       v.style.opacity = 0;
@@ -66,10 +66,15 @@ function Chat() {
         animateOpacity(0, 1, 500, () => { rafRef.current = requestAnimationFrame(monitor); });
       }, 100);
     };
-    v.addEventListener('canplay', onCanPlay);
+    v.addEventListener('canplay', startPlay, { once: true });
+    v.addEventListener('loadeddata', startPlay, { once: true });
+    v.addEventListener('loadedmetadata', startPlay, { once: true });
     v.addEventListener('ended', onEnded);
+    if (v.readyState >= 2) startPlay();
     return () => {
-      v.removeEventListener('canplay', onCanPlay);
+      v.removeEventListener('canplay', startPlay);
+      v.removeEventListener('loadeddata', startPlay);
+      v.removeEventListener('loadedmetadata', startPlay);
       v.removeEventListener('ended', onEnded);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
@@ -211,9 +216,12 @@ function Chat() {
         ref={videoRef}
         src={VIDEO_URL}
         muted
+        autoPlay
         playsInline
+        loop
         preload="auto"
-        style={{ opacity: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+        x-webkit-airplay="deny"
+        style={{ opacity: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, WebkitTransform: 'translateZ(0)', transform: 'translateZ(0)' }}
       />
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.8) 100%)', zIndex: 1, pointerEvents: 'none' }} />
 
