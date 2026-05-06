@@ -1,46 +1,38 @@
+import Groq from "groq-sdk";
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const getApiKey = () => localStorage.getItem("gemini_api_key");
+const getApiKey = () => localStorage.getItem("groq_api_key");
 
 const MODELS = [
-  "gemini-1.5-flash-latest",
-  "gemini-1.5-pro-latest",
-  "gemini-pro",
+  "llama-3.3-70b-versatile",
+  "llama3-70b-8192",
 ];
 
-export const initializeModel = (modelIndex = 0) => {
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    console.warn("Gemini API key not found.");
-    return null;
-  }
-  const genAI = new GoogleGenerativeAI(apiKey);
-  return genAI.getGenerativeModel({ model: MODELS[modelIndex] });
-};
-
 export const generateWithFallback = async (prompt) => {
+  const apiKey = getApiKey();
+  if (!apiKey) throw new Error("API key not found. Please set it.");
+
+  const groq = new Groq({ apiKey, dangerouslyAllowBrowser: true });
+
   for (let i = 0; i < MODELS.length; i++) {
     try {
-      const m = initializeModel(i);
-      if (!m) throw new Error("API key not found. Please set it.");
-      const result = await m.generateContent(prompt);
-      return result.response.text();
+      const completion = await groq.chat.completions.create({
+        model: MODELS[i],
+        messages: [{ role: "user", content: prompt }],
+      });
+      return completion.choices[0]?.message?.content ?? "";
     } catch (err) {
-      const is429 = err.message?.includes("429") || err.message?.includes("quota");
+      const isRateLimit = err.status === 429 || err.message?.includes("429") || err.message?.includes("rate limit");
       const isLast = i === MODELS.length - 1;
-      if (is429 && !isLast) {
-        console.warn(`Model ${MODELS[i]} quota exceeded, trying ${MODELS[i + 1]}...`);
+      if (isRateLimit && !isLast) {
+        console.warn(`Model ${MODELS[i]} rate limited, trying ${MODELS[i + 1]}...`);
         continue;
       }
-      if (is429 && isLast) {
+      if (isRateLimit && isLast) {
         throw new Error(
-          "All models have exceeded their quota. Please get a new API key at https://aistudio.google.com/app/apikey or wait 24 hours for the quota to reset."
+          "All models are rate limited. Please wait a moment or get a new API key at https://console.groq.com/keys"
         );
       }
       throw err;
     }
   }
 };
-
-export const model = null;

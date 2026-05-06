@@ -156,7 +156,7 @@ function Chat() {
       console.error("Error:", error);
       const isQuota = error.message?.includes("quota") || error.message?.includes("429");
       const friendlyMsg = isQuota
-        ? "⚠️ API quota exceeded. Please get a new API key at https://aistudio.google.com/app/apikey or wait 24 hours for the quota to reset."
+        ? "⚠️ Rate limit exceeded. Please wait a moment or get a new API key at https://console.groq.com/keys"
         : "Error: " + error.message;
       setMessages((prev) => [
         ...prev,

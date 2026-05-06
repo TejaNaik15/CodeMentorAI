@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function ApiKeyPrompt() {
+function ApiKeyPrompt({ setHasKey }) {
   const [apiKey, setApiKey] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -16,7 +16,8 @@ function ApiKeyPrompt() {
 
     try {
       
-      localStorage.setItem("gemini_api_key", apiKey);
+      localStorage.setItem("groq_api_key", apiKey);
+      setHasKey(true);
       setIsModalVisible(false);
       navigate("/chat");
     } catch (err) {
@@ -41,9 +42,9 @@ function ApiKeyPrompt() {
               <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white text-center relative">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="relative">
-                  <h2 className="text-3xl font-bold mb-2">Enter Gemini API Key</h2>
+                  <h2 className="text-3xl font-bold mb-2">Enter Groq API Key</h2>
                   <p className="text-blue-100">
-                    You need a Gemini API key to use this application
+                    You need a Groq API key to use this application
                   </p>
                 </div>
               </div>
@@ -62,7 +63,7 @@ function ApiKeyPrompt() {
                       value={apiKey}
                       onChange={(e) => setApiKey(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder="Enter your Gemini API key"
+                      placeholder="Enter your Groq API key"
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700
                                bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
                                focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
@@ -89,7 +90,7 @@ function ApiKeyPrompt() {
                     <p>
                       Don't have an API key?{" "}
                       <a
-                        href="https://makersuite.google.com/app/apikey"
+                        href="https://console.groq.com/keys"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 dark:text-blue-400 hover:underline"

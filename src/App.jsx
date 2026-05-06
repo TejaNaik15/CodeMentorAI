@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./config/firebase";
 import Home from "./components/Home";
@@ -17,8 +18,13 @@ import VideoBackground from "./components/VideoBackground";
 
 function App() {
   const [user] = useAuthState(auth);
+  const [hasKey, setHasKey] = useState(!!localStorage.getItem("groq_api_key"));
 
-  const hasApiKey = () => !!localStorage.getItem("gemini_api_key");
+  useEffect(() => {
+    const onStorage = () => setHasKey(!!localStorage.getItem("groq_api_key"));
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   return (
     <Router>
@@ -29,7 +35,7 @@ function App() {
             path="/chat"
             element={
               <PrivateRoute>
-                {hasApiKey() ? <Chat /> : <Navigate to="/api-key" />}
+                {hasKey ? <Chat /> : <Navigate to="/api-key" />}
               </PrivateRoute>
             }
           />
@@ -44,8 +50,8 @@ function App() {
             path="/api-key"
             element={
               <PrivateRoute>
-                {hasApiKey() ? <Navigate to="/chat" /> :
-                  <VideoBackground><Navigation /><ApiKeyPrompt /></VideoBackground>
+                {hasKey ? <Navigate to="/chat" /> :
+                  <VideoBackground><Navigation /><ApiKeyPrompt setHasKey={setHasKey} /></VideoBackground>
                 }
               </PrivateRoute>
             }

@@ -10,10 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "firebase": "^12.1.0",
     "formik": "^2.4.6",
     "framer-motion": "^12.23.12",
+    "groq-sdk": "^0.9.1",
     "lucide-react": "^1.14.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
