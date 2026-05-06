@@ -42,7 +42,7 @@ function Navigation() {
                 className="text-3xl tracking-tight"
                 style={{ fontFamily: "'Instrument Serif', serif", color: '#000000' }}
               >
-                CodeMentorAI<sup className="text-lg">®</sup>
+                CodeMentorAI
               </span>
             </Link>
           </div>
