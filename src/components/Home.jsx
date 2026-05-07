@@ -36,11 +36,14 @@ function Landing() {
             className="animate-fade-rise-delay text-base sm:text-lg max-w-2xl mt-8 leading-relaxed font-medium"
             style={{
               color: '#1a1a1a',
-              fontFamily: "'Open Sans', sans-serif",
+              fontFamily: "'Inter', sans-serif",
               textShadow: '0 1px 8px rgba(255,255,255,0.9)',
             }}
           >
-            Experience a new era of coding where an AI companion understands your needs, resolves your challenges, and helps you create exceptional software.
+            Experience a new era of coding where an{' '}
+            <em style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 500 }}>AI companion</em>{' '}
+            understands your needs, resolves your challenges, and helps you create{' '}
+            <em style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontWeight: 500 }}>exceptional software.</em>
           </p>
 
           <div className="animate-fade-rise-delay-2 flex justify-center gap-6 flex-wrap mt-12">
