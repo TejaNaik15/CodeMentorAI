@@ -36,7 +36,7 @@ function Landing() {
             className="animate-fade-rise-delay text-base sm:text-lg max-w-2xl mt-8 leading-relaxed font-medium"
             style={{
               color: '#1a1a1a',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Open Sans', sans-serif",
               textShadow: '0 1px 8px rgba(255,255,255,0.9)',
             }}
           >
