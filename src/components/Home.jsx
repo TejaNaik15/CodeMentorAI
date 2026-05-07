@@ -143,49 +143,80 @@ function Landing() {
         </motion.div>
       </div>
 
-      {/* Sticky stacking feature cards */}
-      <div className="max-w-3xl mx-auto px-4 pb-32">
-        <div className="flex flex-col gap-4">
-          {features.map((feature, index) => (
+      {/* Feature Section */}
+      <section className="w-full py-16 px-4">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <h1 className="text-3xl font-semibold text-neutral-900" style={{ fontFamily: "'Poppins', sans-serif" }}>
+            Powerful Features
+          </h1>
+          <p className="text-sm text-neutral-600 mt-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
+            Everything you need to get instant AI-powered coding help — securely, privately, and blazing fast.
+          </p>
+        </div>
+
+        {/* Top 3 cards with image-style visuals */}
+        <div className="flex flex-wrap items-start justify-center gap-8 max-w-5xl mx-auto">
+          {features.slice(0, 3).map((feature, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-              className="flex max-sm:flex-col bg-white/20 backdrop-blur-md gap-4 shadow-md rounded-2xl overflow-hidden hover:shadow-lg transition-shadow border border-white/40"
-              style={{ top: `calc(80px + ${index * 28}px)`, position: 'sticky' }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              whileHover={{ y: -4 }}
+              className="max-w-xs w-full hover:-translate-y-0.5 transition duration-300"
             >
-              {/* Left — info */}
-              <div className="flex flex-1 flex-col p-6 md:p-8">
-                <h3
-                  className="text-xl md:text-2xl border-b border-white/30 pb-2 text-neutral-900 font-semibold"
-                  style={{ fontFamily: "'Inter', sans-serif" }}
-                >
-                  {feature.title}
-                </h3>
-                <p className="text-neutral-700 mt-2 text-sm leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  {feature.description}
-                </p>
-                <ul className="mt-3 space-y-1">
-                  {feature.points.map((point, i) => (
-                    <li key={i} className="text-sm text-neutral-600" style={{ fontFamily: "'Inter', sans-serif" }}>
-                      — {point}
-                    </li>
-                  ))}
-                </ul>
+              <div className={`w-full h-44 bg-gradient-to-br ${feature.gradient} rounded-xl flex items-center justify-center shadow-md`}>
+                <div className="text-white text-6xl opacity-80">{feature.icon}</div>
               </div>
-
-              {/* Right — icon visual */}
-              <div className={`flex items-center justify-center ${feature.bg} backdrop-blur-sm min-w-[120px] sm:min-w-[160px] p-8`}>
-                <div className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center shadow-lg`}>
-                  <div className="text-white text-3xl">{feature.icon}</div>
-                </div>
-              </div>
+              <h3 className="text-base font-semibold text-neutral-800 mt-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                {feature.title}
+              </h3>
+              <p className="text-sm text-neutral-600 mt-1" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                {feature.description}
+              </p>
             </motion.div>
           ))}
         </div>
-      </div>
+
+        {/* Bottom section — why choose */}
+        <div className="max-w-5xl mx-auto mt-16 px-4">
+          <p
+            className="text-2xl md:text-3xl text-left font-medium max-w-2xl mb-8"
+            style={{
+              fontFamily: "'Poppins', sans-serif",
+              background: 'linear-gradient(to right, #1e293b, #4D6EA3)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            Why developers choose CodeMentorAI?
+          </p>
+
+          <div className="flex flex-col md:flex-row items-stretch justify-center gap-6">
+            {features.slice(3).map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="flex-1 bg-white/25 backdrop-blur-md rounded-2xl border border-white/40 p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className={`w-12 h-12 bg-gradient-to-br ${feature.gradient} rounded-xl flex items-center justify-center mb-4 shadow`}>
+                  <div className="text-white text-xl">{feature.icon}</div>
+                </div>
+                <h3 className="text-base font-semibold text-neutral-900 mb-1" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-neutral-600" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Stats */}
       <div className="container mx-auto px-6 pb-20">
