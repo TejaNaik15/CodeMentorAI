@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { FaRobot, FaLock, FaGithub, FaLightbulb, FaBrain } from "react-icons/fa";
+import { FaRobot, FaGithub, FaLightbulb, FaBrain, FaFire, FaCode } from "react-icons/fa";
+import { MdSecurity } from "react-icons/md";
 import { motion } from "framer-motion";
 import VideoBackground from "./VideoBackground";
 
@@ -8,28 +9,14 @@ function Landing() {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-      },
-    },
+    visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
   };
 
   return (
     <VideoBackground>
-      <div className="container mx-auto px-6 text-center" style={{ paddingTop: 'calc(8rem - 75px)', paddingBottom: '10rem' }}>
+      <div className="container mx-auto px-6 text-center" style={{ paddingTop: 'calc(8rem - 75px)', paddingBottom: '6rem' }}>
+
+        {/* Hero */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -38,11 +25,7 @@ function Landing() {
         >
           <h1
             className="animate-fade-rise max-w-5xl font-normal text-5xl sm:text-7xl md:text-8xl text-[#000000]"
-            style={{
-              fontFamily: "'Instrument Serif', serif",
-              lineHeight: 0.95,
-              letterSpacing: '-2.46px',
-            }}
+            style={{ fontFamily: "'Instrument Serif', serif", lineHeight: 0.95, letterSpacing: '-2.46px' }}
           >
             AI-Powered{' '}
             <em className="italic" style={{ color: '#6F6F6F' }}>Developer</em>{' '}
@@ -50,8 +33,12 @@ function Landing() {
           </h1>
 
           <p
-            className="animate-fade-rise-delay text-base sm:text-lg max-w-2xl mt-8 leading-relaxed"
-            style={{ color: '#6F6F6F', fontFamily: "'Inter', sans-serif" }}
+            className="animate-fade-rise-delay text-base sm:text-lg max-w-2xl mt-8 leading-relaxed font-medium"
+            style={{
+              color: '#1a1a1a',
+              fontFamily: "'Inter', sans-serif",
+              textShadow: '0 1px 8px rgba(255,255,255,0.9)',
+            }}
           >
             Experience a new era of coding where an AI companion understands your needs, resolves your challenges, and helps you create exceptional software.
           </p>
@@ -70,7 +57,7 @@ function Landing() {
               href="https://github.com/TejaNaik15/CodeMentorAI"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full px-14 py-5 text-base flex items-center gap-3 hover:scale-[1.03] transition-transform duration-200 border border-gray-300"
+              className="rounded-full px-14 py-5 text-base flex items-center gap-3 hover:scale-[1.03] transition-transform duration-200 border border-gray-400 bg-white/30 backdrop-blur-sm"
               style={{ color: '#000000', fontFamily: "'Inter', sans-serif" }}
             >
               <FaGithub className="text-xl" />
@@ -79,43 +66,62 @@ function Landing() {
           </div>
         </motion.div>
 
+        {/* Feature Cards — minimal so video shows through */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid md:grid-cols-3 gap-8 mt-20"
+          className="grid md:grid-cols-3 gap-6 mt-24"
         >
           <FeatureCard
             icon={<FaBrain />}
-            title="AI-Powered Intelligence"
-            description="Advanced machine learning algorithms that understand your code context and provide smart suggestions."
+            title="Groq-Powered AI"
+            description="Runs on llama-3.3-70b-versatile via Groq — one of the fastest LLM inference engines available."
             gradient="from-blue-500 to-blue-700"
           />
           <FeatureCard
-            icon={<FaLightbulb />}
-            title="Smart Solutions"
-            description="Get instant help with debugging, optimization, and best practices across all programming languages."
-            gradient="from-purple-500 to-purple-700"
+            icon={<FaCode />}
+            title="Code-First Answers"
+            description="Get syntax-highlighted, Markdown-rendered responses with real code examples across 100+ languages."
+            gradient="from-violet-500 to-violet-700"
           />
           <FeatureCard
-            icon={<FaLock />}
-            title="Secure & Private"
-            description="Your code and conversations are encrypted and completely private. We take security seriously."
+            icon={<FaFire />}
+            title="Real-time Firebase"
+            description="Every message is persisted in Firestore and synced live — your full chat history, always available."
+            gradient="from-orange-500 to-orange-700"
+          />
+          <FeatureCard
+            icon={<MdSecurity />}
+            title="Secure Auth"
+            description="Email/password and Google OAuth via Firebase Authentication with session persistence."
+            gradient="from-green-500 to-green-700"
+          />
+          <FeatureCard
+            icon={<FaLightbulb />}
+            title="Model Fallback"
+            description="Automatically falls back to llama3-70b-8192 on rate limits so you never hit a dead end."
+            gradient="from-yellow-500 to-yellow-600"
+          />
+          <FeatureCard
+            icon={<FaRobot />}
+            title="Private by Design"
+            description="All conversations are scoped to your user ID — no one else can see your chat history."
             gradient="from-pink-500 to-pink-700"
           />
         </motion.div>
 
-        
+        {/* Stats */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8"
+          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6"
         >
           <StatCard number="100+" label="Programming Languages" />
           <StatCard number="24/7" label="AI Availability" />
-          <StatCard number="1M+" label="Developers" />
-          <StatCard number="5⭐" label="Average Rating" />
+          <StatCard number="⚡ Fast" label="Groq Inference" />
+          <StatCard number="🔒" label="Private & Secure" />
         </motion.div>
       </div>
     </VideoBackground>
@@ -125,16 +131,14 @@ function Landing() {
 function FeatureCard({ icon, title, description, gradient }) {
   return (
     <motion.div
-      whileHover={{ y: -5 }}
-      className={`bg-white/60 backdrop-blur-lg p-8 rounded-2xl border border-gray-200/60
-                hover:border-gray-300 transition-all duration-300 group shadow-sm`}
+      whileHover={{ y: -4 }}
+      className="bg-white/30 backdrop-blur-md p-6 rounded-2xl border border-white/40 hover:bg-white/40 transition-all duration-300 group shadow-sm text-left"
     >
-      <div className={`w-14 h-14 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center
-                    transform group-hover:scale-110 transition-transform duration-300`}>
-        <div className="text-white text-2xl">{icon}</div>
+      <div className={`w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300`}>
+        <div className="text-white text-xl">{icon}</div>
       </div>
-      <h3 className="text-[#000000] text-xl font-semibold mt-6 mb-4" style={{ fontFamily: "'Inter', sans-serif" }}>{title}</h3>
-      <p className="text-[#6F6F6F] leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>{description}</p>
+      <h3 className="text-[#000000] text-lg font-semibold mt-4 mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>{title}</h3>
+      <p className="text-[#3a3a3a] text-sm leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>{description}</p>
     </motion.div>
   );
 }
@@ -143,13 +147,13 @@ function StatCard({ number, label }) {
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
-      className="text-center p-6 bg-white/60 backdrop-blur-lg rounded-2xl border border-gray-200/60 shadow-sm"
+      className="text-center p-5 bg-white/30 backdrop-blur-md rounded-2xl border border-white/40 shadow-sm"
     >
-      <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text mb-2"
+      <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text mb-1"
         style={{ fontFamily: "'Instrument Serif', serif" }}>
         {number}
       </div>
-      <div className="text-[#6F6F6F] text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>{label}</div>
+      <div className="text-[#3a3a3a] text-sm font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>{label}</div>
     </motion.div>
   );
 }
