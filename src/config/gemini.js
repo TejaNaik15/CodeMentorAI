@@ -3,10 +3,9 @@ import Groq from "groq-sdk";
 const getApiKey = () => localStorage.getItem("groq_api_key");
 
 const MODELS = [
-  "llama-3.1-8b-instant",
-  "llama-3.2-11b-vision-preview",
-  "gemma2-9b-it",
-  "compound-beta-mini",
+  "openai/gpt-oss-20b",
+  "openai/gpt-oss-120b",
+  "meta-llama/llama-4-maverick-17b-128e-instruct",
 ];
 
 export const generateWithFallback = async (prompt) => {
