@@ -119,13 +119,16 @@ function Chat() {
       });
     } catch (error) {
       console.error("Error:", error);
-      const isQuota = error.message?.includes("quota") || error.message?.includes("429");
-      const friendlyMsg = isQuota
-        ? "⚠️ Rate limit exceeded. Please wait a moment or get a new API key at https://console.groq.com/keys"
-        : "Error: " + error.message;
+      const isNoKey = error.message?.includes("API key not found");
+      const isRateLimit = error.message?.includes("rate limit") || error.message?.includes("429") || error.message?.includes("quota");
+      const friendlyMsg = isNoKey
+        ? "⚠️ No Groq API key found. Please clear your key and re-enter a valid one from https://console.groq.com/keys"
+        : isRateLimit
+        ? "⚠️ Rate limit reached. Please wait a moment and try again, or get a new API key at https://console.groq.com/keys"
+        : "❌ Error: " + error.message;
       setMessages((prev) => [
         ...prev,
-        { id: Date.now(), text: friendlyMsg, role: "ai", userId: user.uid },
+        { id: Date.now(), text: friendlyMsg, role: "ai", userId: user?.uid },
       ]);
     } finally {
       setNewMessage("");
@@ -198,23 +201,32 @@ function Chat() {
 
       {/* Chat header */}
       <div className="relative z-10 bg-white/70 backdrop-blur-lg border-b border-gray-200/50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-            </svg>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-xl" style={{ fontFamily: "'Instrument Serif', serif", color: '#000000' }}>
+                AI Chat Assistant
+              </h1>
+              <p className="text-sm" style={{ color: '#6F6F6F', fontFamily: "'Inter', sans-serif" }}>
+                Get answers. Find inspiration. Be more productive.
+              </p>
+            </div>
           </div>
-          <div>
-            <h1
-              className="text-xl"
-              style={{ fontFamily: "'Instrument Serif', serif", color: '#000000' }}
-            >
-              AI Chat Assistant
-            </h1>
-            <p className="text-sm" style={{ color: '#6F6F6F', fontFamily: "'Inter', sans-serif" }}>
-              Get answers. Find inspiration. Be more productive.
-            </p>
-          </div>
+          <button
+            onClick={() => {
+              localStorage.removeItem("groq_api_key");
+              window.location.href = "/api-key";
+            }}
+            className="text-xs px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-100 transition-colors"
+            style={{ color: '#6F6F6F', fontFamily: "'Inter', sans-serif" }}
+          >
+            Reset API Key
+          </button>
         </div>
       </div>
 

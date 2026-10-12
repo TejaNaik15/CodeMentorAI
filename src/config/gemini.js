@@ -9,7 +9,7 @@ const MODELS = [
 
 export const generateWithFallback = async (prompt) => {
   const apiKey = getApiKey();
-  if (!apiKey) throw new Error("API key not found. Please set it.");
+  if (!apiKey) throw new Error("API key not found. Please enter your Groq API key.");
 
   const groq = new Groq({ apiKey, dangerouslyAllowBrowser: true });
 
@@ -21,18 +21,23 @@ export const generateWithFallback = async (prompt) => {
       });
       return completion.choices[0]?.message?.content ?? "";
     } catch (err) {
-      const isRateLimit = err.status === 429 || err.message?.includes("429") || err.message?.includes("rate limit");
-      const isLast = i === MODELS.length - 1;
-      if (isRateLimit && !isLast) {
+      const isRateLimit =
+        err.status === 429 ||
+        err.message?.includes("429") ||
+        err.message?.includes("rate limit");
+      if (isRateLimit && i < MODELS.length - 1) {
         console.warn(`Model ${MODELS[i]} rate limited, trying ${MODELS[i + 1]}...`);
         continue;
       }
-      if (isRateLimit && isLast) {
+      if (isRateLimit) {
         throw new Error(
-          "All models are rate limited. Please wait a moment or get a new API key at https://console.groq.com/keys"
+          "⚠️ Rate limit reached. Please wait a moment or get a new API key at https://console.groq.com/keys"
         );
       }
       throw err;
     }
   }
 };
+
+export const initializeModel = () => null;
+export const model = null;

@@ -21,6 +21,8 @@ function App() {
   const [hasKey, setHasKey] = useState(!!localStorage.getItem("groq_api_key"));
 
   useEffect(() => {
+    // clear any stale gemini key from old versions
+    localStorage.removeItem("gemini_api_key");
     const onStorage = () => setHasKey(!!localStorage.getItem("groq_api_key"));
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
