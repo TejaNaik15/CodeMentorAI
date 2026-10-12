@@ -3,8 +3,10 @@ import Groq from "groq-sdk";
 const getApiKey = () => localStorage.getItem("groq_api_key");
 
 const MODELS = [
-  "llama-3.3-70b-versatile",
+  "llama3-8b-8192",
   "llama3-70b-8192",
+  "mixtral-8x7b-32768",
+  "gemma2-9b-it",
 ];
 
 export const generateWithFallback = async (prompt) => {
