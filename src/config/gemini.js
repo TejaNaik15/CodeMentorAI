@@ -3,9 +3,8 @@ import Groq from "groq-sdk";
 const getApiKey = () => localStorage.getItem("groq_api_key");
 
 const MODELS = [
-  "llama3-8b-8192",
-  "llama3-70b-8192",
-  "mixtral-8x7b-32768",
+  "llama-3.1-8b-instant",
+  "llama-3.3-70b-specdec",
   "gemma2-9b-it",
 ];
 
@@ -27,13 +26,19 @@ export const generateWithFallback = async (prompt) => {
         err.status === 429 ||
         err.message?.includes("429") ||
         err.message?.includes("rate limit");
-      if (isRateLimit && i < MODELS.length - 1) {
-        console.warn(`Model ${MODELS[i]} rate limited, trying ${MODELS[i + 1]}...`);
+      const isUnavailable =
+        err.status === 404 ||
+        err.status === 400 ||
+        err.message?.includes("model_not_found") ||
+        err.message?.includes("decommissioned") ||
+        err.message?.includes("does not exist");
+      if ((isRateLimit || isUnavailable) && i < MODELS.length - 1) {
+        console.warn(`Model ${MODELS[i]} unavailable, trying ${MODELS[i + 1]}...`);
         continue;
       }
-      if (isRateLimit) {
+      if (isRateLimit || isUnavailable) {
         throw new Error(
-          "⚠️ Rate limit reached. Please wait a moment or get a new API key at https://console.groq.com/keys"
+          "⚠️ All models unavailable. Please wait or get a new API key at https://console.groq.com/keys"
         );
       }
       throw err;
