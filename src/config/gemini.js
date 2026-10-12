@@ -4,8 +4,9 @@ const getApiKey = () => localStorage.getItem("groq_api_key");
 
 const MODELS = [
   "llama-3.1-8b-instant",
-  "llama-3.3-70b-specdec",
+  "llama-3.2-11b-vision-preview",
   "gemma2-9b-it",
+  "compound-beta-mini",
 ];
 
 export const generateWithFallback = async (prompt) => {
@@ -32,8 +33,9 @@ export const generateWithFallback = async (prompt) => {
         err.message?.includes("model_not_found") ||
         err.message?.includes("decommissioned") ||
         err.message?.includes("does not exist");
+      console.error(`Model ${MODELS[i]} failed:`, err.status, err.message);
       if ((isRateLimit || isUnavailable) && i < MODELS.length - 1) {
-        console.warn(`Model ${MODELS[i]} unavailable, trying ${MODELS[i + 1]}...`);
+        console.warn(`Trying next model: ${MODELS[i + 1]}`);
         continue;
       }
       if (isRateLimit || isUnavailable) {
